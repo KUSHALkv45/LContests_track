@@ -3,30 +3,51 @@ from src.data_ops import load_data, upsert_event
 
 st.title("📊 Event Tracker")
 
-# ---------- VIEW ----------
-st.header("View Completed Events")
-
 df = load_data()
 
-sort_col = st.selectbox(
-    "Sort by column",
-    options=["contest_no", "count", "last_sub_date"]
-)
+# ---------- VIEW CONTROLS ----------
+st.header("View Completed Events")
 
-sort_order = st.radio(
-    "Sort order",
-    options=["Ascending", "Descending"],
-    horizontal=True
-)
+show_events = st.checkbox("Show completed events")
 
-ascending = sort_order == "Ascending"
+if show_events and not df.empty:
 
-if not df.empty:
-    st.dataframe(
-        df.sort_values(by=sort_col, ascending=ascending),
-        use_container_width=True
+    # ---- SEARCH ----
+    search_id = st.number_input(
+        "Search by Contest No (leave 0 to disable)",
+        min_value=0,
+        step=1
     )
-else:
+
+    filtered_df = df
+
+    if search_id != 0:
+        filtered_df = df[df["contest_no"] == search_id]
+
+        if filtered_df.empty:
+            st.info("No event found for this Contest No.")
+
+    # ---- SORTING ----
+    if not filtered_df.empty:
+        sort_col = st.selectbox(
+            "Sort by column",
+            options=["contest_no", "count", "last_sub_date"]
+        )
+
+        sort_order = st.radio(
+            "Sort order",
+            options=["Ascending", "Descending"],
+            horizontal=True
+        )
+
+        ascending = sort_order == "Ascending"
+
+        st.dataframe(
+            filtered_df.sort_values(by=sort_col, ascending=ascending),
+            use_container_width=True
+        )
+
+elif show_events:
     st.info("No events yet.")
 
 # ---------- ADD / UPDATE ----------
