@@ -5,7 +5,7 @@ st.title("📊 Event Tracker")
 
 df = load_data()
 
-# ---------- VIEW CONTROLS ----------
+# ---------- VIEW ----------
 st.header("View Completed Events")
 
 show_events = st.checkbox("Show completed events")
@@ -27,25 +27,9 @@ if show_events and not df.empty:
         if filtered_df.empty:
             st.info("No event found for this Contest No.")
 
-    # ---- SORTING ----
     if not filtered_df.empty:
-        sort_col = st.selectbox(
-            "Sort by column",
-            options=["contest_no", "count", "last_sub_date"]
-        )
-
-        sort_order = st.radio(
-            "Sort order",
-            options=["Ascending", "Descending"],
-            horizontal=True
-        )
-
-        ascending = sort_order == "Ascending"
-
-        st.dataframe(
-            filtered_df.sort_values(by=sort_col, ascending=ascending),
-            use_container_width=True
-        )
+        st.caption("💡 Tip: Click on column headers to sort")
+        st.dataframe(filtered_df, use_container_width=True)
 
 elif show_events:
     st.info("No events yet.")
